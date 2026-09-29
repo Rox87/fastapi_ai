@@ -53,9 +53,9 @@ async def processar(req: func.HttpRequest) -> func.HttpResponse:
         user_id = req.headers.get("x-forwarded-for", "anonymous").split(",")[0].strip()
 
     # 2. Rate limit
-    if not verificar_rate_limit(user_id=user_id, max_reqs=100, janela_segundos=60):
+    if not verificar_rate_limit(user_id=user_id, max_reqs=60, janela_segundos=60):
         return func.HttpResponse(
-            body=json.dumps({"erro": "Limite de 100 requisições por minuto excedido."}),
+            body=json.dumps({"erro": "Limite de 60 requisições por minuto excedido."}),
             status_code=429,
             mimetype="application/json",
             headers={"Retry-After": "60"}
