@@ -5,7 +5,7 @@ from core.constants import MODELO_PADRAO
 # Inicialização global do cliente (reutiliza conexões HTTP)
 client = AsyncOpenAI(
     base_url=os.getenv("OPENAI_BASE_URL"),
-    api_key=os.getenv("OPENAI_API_KEY"),
+    api_key=os.getenv("OPENAI_API_KEY") or "dummy-key-for-local-tests",
 )
 
 async def processar_texto_llm(instrucao: str, texto: str) -> str:
