@@ -7,15 +7,23 @@ client = AsyncOpenAI(
     base_url=os.getenv("OPENAI_BASE_URL"),
     api_key=os.getenv("OPENAI_API_KEY") or "dummy-key-for-local-tests",
 )
-
 async def processar_texto_llm(instrucao: str, texto: str) -> str:
-    response = await client.chat.completions.create(
-        model=MODELO_PADRAO,
-        messages=[
+    # Lê o esforço de raciocínio da variável de ambiente (ex: "low", "medium", "high")
+    reasoning_effort = os.getenv("REASONING_EFFORT")
+
+    # Dicionário de argumentos base para a API
+    kwargs = {
+        "model": MODELO_PADRAO,
+        "messages": [
             {"role": "system", "content": instrucao},
             {"role": "user", "content": texto},
         ],
-        temperature=0.3,
-        timeout=30.0,  # Evita que a Function fique travada indefinidamente
-    )
+        "temperature": 0.3,
+        "timeout": 30.0,
+    }
+    # Adiciona o reasoning_effort apenas se a variável de ambiente estiver definida
+    if reasoning_effort:
+        kwargs["reasoning_effort"] = reasoning_effort
+
+    response = await client.chat.completions.create(**kwargs)
     return response.choices[0].message.content or ""

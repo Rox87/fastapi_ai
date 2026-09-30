@@ -1,4 +1,5 @@
 PROMPTS_POR_MODO = {
+    "resumir": "resuma o texto de forma objetiva e clara:",
     "corrigir": "sem rodeios, melhore:"
 }
 
