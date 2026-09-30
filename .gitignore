@@ -9,3 +9,5 @@ venv/
 .venv/
 .pytest_cache/
 .coverage
+local.settings.json
+.python_packages
