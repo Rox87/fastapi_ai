@@ -63,7 +63,7 @@ async def processar(req: func.HttpRequest) -> func.HttpResponse:
         resultado = await processar_texto_llm(instrucao, texto)
 
         return func.HttpResponse(
-            body=json.dumps({"status":"sucesso","resultado": resultado}),
+            body=json.dumps({"status": "sucesso", "resultado": resultado}),
             status_code=200,
             mimetype="application/json"
         )

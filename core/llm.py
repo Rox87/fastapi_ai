@@ -9,7 +9,7 @@ client = AsyncOpenAI(
 )
 async def processar_texto_llm(instrucao: str, texto: str) -> str:
     # Lê o esforço de raciocínio da variável de ambiente (ex: "low", "medium", "high")
-    REASONING_EFFORT = os.getenv("REASONING_EFFORT")
+    reasoning_effort = os.getenv("REASONING_EFFORT") or os.getenv("reasoning_effort")
 
     # Dicionário de argumentos base para a API
     kwargs = {
@@ -22,8 +22,8 @@ async def processar_texto_llm(instrucao: str, texto: str) -> str:
         "timeout": 30.0,
     }
     # Adiciona o reasoning_effort apenas se a variável de ambiente estiver definida
-    if REASONING_EFFORT:
-        kwargs["REASONING_EFFORT"] = REASONING_EFFORT
+    if reasoning_effort:
+        kwargs["reasoning_effort"] = reasoning_effort
         kwargs.pop("temperature", None)  # Evita o erro 400 nos modelos de raciocínio
 
     response = await client.chat.completions.create(**kwargs)
