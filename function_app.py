@@ -20,7 +20,7 @@ async def processar(req: func.HttpRequest) -> func.HttpResponse:
     # 2. Rate limit
     if not verificar_rate_limit(user_id=user_id, max_reqs=60, janela_segundos=60):
         return func.HttpResponse(
-            body=json.dumps({"erro": "Limite de 60 requisições por minuto excedido."}),
+            body=json.dumps({"status":"error","erro": "Limite de 60 requisições por minuto excedido."}),
             status_code=429,
             mimetype="application/json",
             headers={"Retry-After": "60"}
@@ -31,7 +31,7 @@ async def processar(req: func.HttpRequest) -> func.HttpResponse:
         req_body = req.get_json()
     except ValueError:
         return func.HttpResponse(
-            body=json.dumps({"erro": "Corpo da requisição deve ser um JSON válido."}),
+            body=json.dumps({"status":"error","erro": "Corpo da requisição deve ser um JSON válido."}),
             status_code=400,
             mimetype="application/json"
         )
@@ -41,7 +41,7 @@ async def processar(req: func.HttpRequest) -> func.HttpResponse:
 
     if not modo or not texto or not isinstance(texto, str):
         return func.HttpResponse(
-            body=json.dumps({"erro": "Os campos 'modo' e 'texto' (string) são obrigatórios."}),
+            body=json.dumps({"status":"error","erro": "Os campos 'modo' e 'texto' (string) são obrigatórios."}),
             status_code=400,
             mimetype="application/json"
         )
@@ -50,6 +50,7 @@ async def processar(req: func.HttpRequest) -> func.HttpResponse:
     if not instrucao:
         return func.HttpResponse(
             body=json.dumps({
+                "status":"error",
                 "erro": f"Modo '{modo}' não suportado.",
                 "modos_disponiveis": list(PROMPTS_POR_MODO.keys())
             }),
@@ -62,7 +63,7 @@ async def processar(req: func.HttpRequest) -> func.HttpResponse:
         resultado = await processar_texto_llm(instrucao, texto)
 
         return func.HttpResponse(
-            body=json.dumps({"resultado": resultado, "modo": modo}),
+            body=json.dumps({"status":"sucesso","resultado": resultado}),
             status_code=200,
             mimetype="application/json"
         )
@@ -70,7 +71,7 @@ async def processar(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         logging.exception("Falha ao invocar a API de LLM.")
         return func.HttpResponse(
-            body=json.dumps({"erro": "Falha na comunicação com o serviço de IA."}),
+            body=json.dumps({"status":"error","erro": "Falha na comunicação com o serviço de IA."}),
             status_code=502,  # Bad Gateway (erro do upstream, não do seu código)
             mimetype="application/json"
         )
